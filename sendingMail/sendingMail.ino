@@ -1,11 +1,3 @@
-// To send emails with the ESP32,
-// we’ll use the ESP-Mail-Client library. 
-// This library allows the ESP32 to send and receive
-// emails with or without attachments via SMTP and IMAP servers.
-// In this project, we’ll use SMTP to send an email without attachments.
-
-// To customise the code to work with your local network, search though the file for "***", and adjust the code as described.
-
 /*
   Rui Santos
   Complete project details at:
@@ -15,6 +7,8 @@
   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
   Example adapted from: https://github.com/mobizt/ESP-Mail-Client
+
+  To customise the code to work with your local network, search though the file for "***", and adjust the code as described.
 
 */
 
@@ -95,16 +89,6 @@ void setup(){
   message.text.charSet = "us-ascii";
   message.html.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
 
-  /*
-  //Send raw text message
-  String textMsg = "Hello World! - Sent from ESP board";
-  message.text.content = textMsg.c_str();
-  message.text.charSet = "us-ascii";
-  message.text.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
-  
-  message.priority = esp_mail_smtp_priority::esp_mail_smtp_priority_low;
-  message.response.notify = esp_mail_smtp_notify_success | esp_mail_smtp_notify_failure | esp_mail_smtp_notify_delay;*/
-
   /* Set the custom message header */
   //message.addHeader("Message-ID: <abcde.fghij@gmail.com>");
 
@@ -149,13 +133,3 @@ void smtpCallback(SMTP_Status status){
     Serial.println("----------------\n");
   }
 }
-
-
-/*
-SMTP Server: smtp.gmail.com
-SMTP username: Complete Gmail address //yourMailbox34338
-SMTP password: Your Gmail password // mailbox34338
-SMTP port (TLS): 587
-SMTP port (SSL): 465
-SMTP TLS/SSL required: yes
- */
