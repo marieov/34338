@@ -36,11 +36,18 @@ void loop() {
  static bool isClosed_switch = 1; //same as the obove - is closed
  static bool *ptr_sw1 = &isOpen_switch; // pointer to Opened Switch
  static bool *ptr_sw2 = &isClosed_switch; //pointer to Closed Switch
+ static bool mail_trigger = 0;
  
 //here whole process start
  tilt_sensor = isTilted(digital_input);
  photo_sensor = lightDetection(analog_input, source_voltage, acdc_max);
  box_state = got_mail(ptr_tilt, ptr_photo, analog_treshold);
- main_fun(&box_state, ptr_sw1, ptr_sw2);
+ mail_trigger = main_fun(&box_state, ptr_sw1, ptr_sw2);
+
+ if(mail_trigger == 1);
+ {
+  //send email
+  mail_trigger = 0;
+ }
 
 }

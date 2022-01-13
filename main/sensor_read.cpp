@@ -28,8 +28,9 @@ bool got_mail(int *ptr_tilt, float *ptr_photo, float analog_treshold)
   return postal_box_state;
 }
 
-void main_fun(bool *flap_state, bool *isOpen, bool *isClosed)
+bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed)
 {
+  int post_and_closed = 0;
   if(*flap_state == 0)
   {
     *isClosed = 1;
@@ -41,9 +42,9 @@ void main_fun(bool *flap_state, bool *isOpen, bool *isClosed)
 
   if(*flap_state == 0 && *isOpen == 1 && *isClosed == 1)
   {
-    //change when team figure notification feature
-    Serial.println("Sending notification");
+    post_and_closed = 1;
     *isOpen = 0;
   }
+  return post_and_closed;
   delay(100);
 }
