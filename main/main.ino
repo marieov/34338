@@ -20,6 +20,7 @@ const float acdc_max = 1023.0; //maximum value obtained form AC/DC converter
 
 void setup() {
   // put your setup code here, to run once:
+  Serial.begin(115200);
   pinMode(digital_input,INPUT_PULLUP);
 
 }
