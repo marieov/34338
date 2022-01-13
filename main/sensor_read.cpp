@@ -28,9 +28,8 @@ bool got_mail(int *ptr_tilt, float *ptr_photo, float analog_treshold)
   return postal_box_state;
 }
 
-bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed)
+bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed, bool *send_trigger)
 {
-  int post_and_closed = 0;
   if(*flap_state == 0)
   {
     *isClosed = 1;
@@ -42,9 +41,8 @@ bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed)
 
   if(*flap_state == 0 && *isOpen == 1 && *isClosed == 1)
   {
-    post_and_closed = 1;
+    *send_trigger = 1;
     *isOpen = 0;
   }
-  return post_and_closed;
-  delay(100);
+  return *send_trigger;
 }
