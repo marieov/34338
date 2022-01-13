@@ -9,7 +9,6 @@
   Example adapted from: https://github.com/mobizt/ESP-Mail-Client
 
   To customise the code to work with your local network, search though the file for "***", and adjust the code as described.
-
 */
 
 #include <Arduino.h>
@@ -18,7 +17,7 @@
 #elif defined(ESP8266)
   #include <ESP8266WiFi.h>
 #endif
-#include <ESP_Mail_Client.h>
+#include <ESP_Mail_Client.h> // If you get an include error here: try to download from "Tools" -> "Manage Libraries..."
 
 #define WIFI_SSID "HUAWEINett" // *** This needs to be changed according to which wifi is available 
 #define WIFI_PASSWORD "aaa11111" // *** This needs to be changed according to which wifi is available 
@@ -83,14 +82,11 @@ void setup(){
   message.addRecipient("Name", RECIPIENT_EMAIL);
 
   /*Send HTML message*/
-  String htmlMsg = "<div style=\"color:#2f4468;\"><h1>Go and check your mailbox.</h1><p>- Sent from ESP board</p></div>";
+  String htmlMsg = "<div style=\"color:#2f4468;\"><h1>Go and check your mailbox.</h1><p>- Sent from your mailbox</p></div>";
   message.html.content = htmlMsg.c_str();
   message.html.content = htmlMsg.c_str();
   message.text.charSet = "us-ascii";
   message.html.transfer_encoding = Content_Transfer_Encoding::enc_7bit;
-
-  /* Set the custom message header */
-  //message.addHeader("Message-ID: <abcde.fghij@gmail.com>");
 
   /* Connect to server with the session config */
   if (!smtp.connect(&session))
