@@ -7,7 +7,6 @@
   Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
   The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
   Example adapted from: https://github.com/mobizt/ESP-Mail-Client
-
   To customise the code to work with your local network, search though the file for "***", and adjust the code as described.
 */
 
@@ -22,24 +21,30 @@
 #define WIFI_SSID "HUAWEINett" // *** This needs to be changed according to which wifi is available 
 #define WIFI_PASSWORD "aaa11111" // *** This needs to be changed according to which wifi is available 
 
-#define SMTP_HOST "smtp.gmail.com"
-#define SMTP_PORT 465
+#define SMTP_HOST "smtp.live.com"
+#define SMTP_PORT 587
 
 /* The sign in credentials */
-#define AUTHOR_EMAIL "yourMailbox34338@gmail.com"
-#define AUTHOR_PASSWORD "mailbox34338"
+#define AUTHOR_EMAIL "dtu34338-2022@hotmail.com"
+#define AUTHOR_PASSWORD "a16jdlvk%%%0dkvg#)+++"
 
 /* Recipient's email*/
-#define RECIPIENT_EMAIL "marieov@stud.ntnu.no" // *** Insert your email adress
+#define RECIPIENT_EMAIL "dtu34338-2022@hotmail" // *** Insert your email adress
 
 /* The SMTP Session object used for Email sending */
 SMTPSession smtp;
 
 /* Callback function to get the Email sending status */
-void smtpCallback(SMTP_Status status);
+void smtpCallback(SMTP_StatusM status);
 
 void setup(){
   Serial.begin(115200);
+
+  sendingMail();
+}
+
+void sendingMail(){
+
   Serial.println();
   Serial.print("Connecting to AP");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -95,10 +100,11 @@ void setup(){
   /* Start sending Email and close the session */
   if (!MailClient.sendMail(&smtp, &message))
     Serial.println("Error sending Email, " + smtp.errorReason());
+   
 }
 
 void loop(){
-
+  
 }
 
 /* Callback function to get the Email sending status */
