@@ -1,4 +1,4 @@
-# 34338
+# Arduino mailbox project
 
 The project is a mail-detection system using Arudino and ESP32/ESP8266.
 A digital sensor (tilt sensor) detects when the flip on the mailbox is opened and an analogue sensor (phototransistor) detects when there is light coming in. An email is then sent to the user over WiFi when the flip is opened and mail is in the mailbox.
