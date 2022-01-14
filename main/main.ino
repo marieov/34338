@@ -15,8 +15,8 @@
 #endif
 #include <ESP_Mail_Client.h> // If you get an include error here: try to download from "Tools" -> "Manage Libraries..."
 
-#define WIFI_SSID "HUAWEINett" // *** This needs to be changed according to which wifi is available 
-#define WIFI_PASSWORD "aaa11111" // *** This needs to be changed according to which wifi is available 
+#define WIFI_SSID "GalxyAP" // *** This needs to be changed according to which wifi is available 
+#define WIFI_PASSWORD "password17" // *** This needs to be changed according to which wifi is available 
 
 #define SMTP_HOST "smtp.live.com"
 #define SMTP_PORT 587
@@ -29,8 +29,9 @@
 #define RECIPIENT_EMAIL "dtu34338-2022@hotmail.com" // *** Insert your email adress
 
 //pin definition on ESP8266
-#define INPUT_D2 2 //ESP32: replace "D2" with "2" ***
-#define INPUT_A0 0 //ESP32: replace "A0" with "0" ***
+//VERY IMPORTANT PART !!!
+#define INPUT_D2 D2 //ESP32: replace "D2" with "2" ***
+#define INPUT_A0 A0 //ESP32: replace "A0" with "0" ***
 
 const int analog_input = INPUT_A0;
 const int digital_input = INPUT_D2;
@@ -86,7 +87,7 @@ void loop() {
  box_state = got_mail(ptr_tilt, ptr_photo, analog_treshold);
  mail_trigger = main_fun(&box_state, ptr_sw1, ptr_sw2, ptr_trigger);
 
- if (true)//(mail_trigger == 1)
+ if (mail_trigger == 1)
  {
   //send email
   Serial.println("Send");
@@ -155,7 +156,7 @@ void sendingEmail(){
   message.sender.name = "Mailbox";
   message.sender.email = AUTHOR_EMAIL;
   message.subject = "You've got mail!";
-  message.addRecipient("Name", RECIPIENT_EMAIL);
+  message.addRecipient("User", RECIPIENT_EMAIL); // ***
 
   /*Send HTML message*/
   String htmlMsg = "<div style=\"color:#2f4468;\"><h1>Go and check your mailbox.</h1><p>- Sent from your mailbox</p></div>";
