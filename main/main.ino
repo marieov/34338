@@ -6,6 +6,7 @@
  Server: Søren Qvist, Marius Larsen
  */
 
+#include "Server.h"
 #include "sensor_read.h"
 
 #if defined(ESP32)
@@ -50,6 +51,8 @@ void sendingEmail();
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
+  
+  serverSetup();
   pinMode(digital_input,INPUT_PULLUP);
 
   Serial.println();
@@ -80,6 +83,8 @@ void loop() {
  static bool *ptr_sw2 = &isClosed_switch; //pointer to Closed Switch
  static bool mail_trigger = 0;
  static bool *ptr_trigger = &mail_trigger;
+  // Check if a client has connected
+   server.handleClient();
  
 //here whole process start
  tilt_sensor = isTilted(digital_input);
