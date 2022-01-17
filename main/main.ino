@@ -4,7 +4,8 @@
  Work areas:
  Sensor part: Krzysztof Jan Pac
  Mail notificiation: Marie Øverby
- Server: Søren Qvist, Marius Larsen
+ Server: Søren Qvist
+ Hardware: Marius Larsen
  */
 
 #if defined(ESP32)
@@ -27,8 +28,8 @@
 /* Recipient's email*/
 #define RECIPIENT_EMAIL "dtu34338-2022@hotmail.com" // *** Insert your email adress
 
-//pin definition on ESP8266
-//VERY IMPORTANT PART !!!
+/* Pin definition on ESP8266/ESP32 */
+/*** VERY IMPORTANT PART !!! ***/
 #define INPUT_D2 D2 //ESP32: replace "D2" with "2" ***
 #define INPUT_A0 A0 //ESP32: replace "A0" with "0" ***
 
@@ -39,19 +40,19 @@ const float source_voltage = 3.3; //source input voltage
 const float acdc_max = 1023.0; //maximum value obtained form AC/DC converter
 const unsigned long collection_dealy = 30000; // 30s
 
-/*reading from tilt sensor */
+/* reading from tilt sensor */
 int isTilted(int digital_input);
-/*reading from light sensor with conversion to [V]*/
+/* reading from light sensor with conversion to [V] */
 float lightDetection(int analog_input, float source_voltage, float acdc_max);
-/*checking the status of mailbox*/
+/* checking the status of mailbox */
 bool got_mail(int *ptr_tilt, float *ptr_photo, float analog_treshold);
-/*deciding wheter send a notification or not, basing on aquired information from previous functions*/
+/* deciding whether send a notification or not, basing on acquired information from previous functions */
 bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed, bool *send_trigger);
-/*timer,used for switching on/off notofication feature*/
+/* timer,used for switching on/off notofication feature */
 void my_timer(unsigned long *time_value, bool *ptr_trigger);
 /* Callback function to get the Email sending status */
 void smtpCallback(SMTP_Status status); 
-/*sending notification to the user when there is a mail in the mailbox*/
+/* sending notification to the user when there is a mail in the mailbox */
 void sendingEmail();
 
 /* The SMTP Session object used for Email sending */
@@ -100,27 +101,28 @@ void loop() {
  box_state = got_mail(ptr_tilt, ptr_photo, analog_treshold);
  mail_trigger = main_fun(&box_state, ptr_sw1, ptr_sw2, ptr_trigger);
 
+/*** Checks if it is possible to send an email ***/
  if (*ptr_trigger == 1) // && want_collect == 0
  {
-  //send email
-  Serial.println("Send");
-  *ptr_trigger = 0;
+  Serial.println("Send"); //remove later 
   sendingEmail(); 
+  *ptr_trigger = 0; // reset mail notification trigger to 0
  }
  delay(100);
 
-//add function for button if it was pushed on the server
-// ** add here**
+//add function for the button on the server website 
+// ** add here **
 
- //check if user want to collect mail from the postal box 
+/*** Checks if user want to collect the mail ***/
  if(want_collect == 1)
   {
+    /*** Switch on timer, which disable notification feature for required time ***/
     my_timer(&mytime, &want_collect);
   }
 
 }
 
-//function definitions
+/*** functions definition below ***/
 
 int isTilted(int digital_input)
 {
@@ -131,6 +133,7 @@ int isTilted(int digital_input)
 float lightDetection(int analog_input, float source_voltage, float acdc_max)
 {
   float sensor_input = analogRead(analog_input);
+  /*** converting into voltage ***/
   float input_volatge = sensor_input * (source_voltage / acdc_max);
   return input_volatge;
 }
@@ -138,12 +141,15 @@ float lightDetection(int analog_input, float source_voltage, float acdc_max)
 bool got_mail(int *ptr_tilt, float *ptr_photo, float analog_treshold)
 {
   static bool postal_box_state = 0;
+  /*** checks if mailbox flap is/was opened and light illuminance has increased ***/
   if((*ptr_tilt == 1) && (*ptr_photo > analog_treshold))
   {
+    /*** someone opened mailbox/put mail inside ***/
     postal_box_state = 1;
   }
   else
   {
+    /*** nothing happened/mailbox is closed right now ***/
     postal_box_state = 0;
   }
 
@@ -152,6 +158,7 @@ bool got_mail(int *ptr_tilt, float *ptr_photo, float analog_treshold)
 
 bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed, bool *send_trigger)
 {
+  /*** checks if mailbox's flap/door is opened or closed ***/
   if(*flap_state == 0)
   {
     *isClosed = 1;
@@ -159,11 +166,15 @@ bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed, bool *send_trigger
   else
   {
     *isOpen = 1;
+    *isClosed = 0;
   }
 
+  /*** checks if mailbox's is closed, flap/door was opened and if right now is closed ***/
   if(*flap_state == 0 && *isOpen == 1 && *isClosed == 1)
   {
+    /*** if conditions are true, notification trigger is set to be true ***/
     *send_trigger = 1;
+    /*** door/flap is closed ***/
     *isOpen = 0;
   }
   return *send_trigger;
@@ -171,17 +182,18 @@ bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed, bool *send_trigger
 
 void my_timer(unsigned long *time_value, bool *ptr_trigger)
 {
+  /*** start counting time in milliseconds ***/
   *time_value = millis();
 
+  /*** checks if desired time has passed ***/
   if(*time_value >= collection_dealy)
   {
     Serial.println("Time has passed");
-    *time_value = 0;
-    *ptr_trigger = 0;
+    *time_value = 0; // reset counter to the 0
+    *ptr_trigger = 0; // switch off button state to false - enables sending mail notification again
   }
 }
 
-// Used for sending email
 /* Callback function to get the Email sending status */
 void smtpCallback(SMTP_Status status){
   /* Print the current status */
