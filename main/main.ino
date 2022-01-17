@@ -39,24 +39,30 @@ const float source_voltage = 3.3; //source input voltage
 const float acdc_max = 1023.0; //maximum value obtained form AC/DC converter
 const unsigned long collection_dealy = 30000; // 30s
 
+/*reading from tilt sensor */
 int isTilted(int digital_input);
+/*reading from light sensor with conversion to [V]*/
 float lightDetection(int analog_input, float source_voltage, float acdc_max);
+/*checking the status of mailbox*/
 bool got_mail(int *ptr_tilt, float *ptr_photo, float analog_treshold);
+/*deciding wheter send a notification or not, basing on aquired information from previous functions*/
 bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed, bool *send_trigger);
+/*timer,used for switching on/off notofication feature*/
 void my_timer(unsigned long *time_value, bool *ptr_trigger);
-
 /* Callback function to get the Email sending status */
 void smtpCallback(SMTP_Status status); 
+/*sending notification to the user when there is a mail in the mailbox*/
 void sendingEmail();
 
-
-
+/* The SMTP Session object used for Email sending */
+SMTPSession smtp;
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
   pinMode(digital_input,INPUT_PULLUP);
 
+/*** WiFi connection process ****/
   Serial.println();
   Serial.print("Connecting to AP");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -83,12 +89,12 @@ void loop() {
  static bool isClosed_switch = 1; //same as the obove - is closed
  static bool *ptr_sw1 = &isOpen_switch; // pointer to Opened Switch
  static bool *ptr_sw2 = &isClosed_switch; //pointer to Closed Switch
- static bool mail_trigger = 0;
- static bool *ptr_trigger = &mail_trigger;
- static unsigned long mytime = 0;
- static bool want_collect = 0;
+ static bool mail_trigger = 0; // variable used to trigger notification feature
+ static bool *ptr_trigger = &mail_trigger; // pointer to the above variable
+ static unsigned long mytime = 0; // store the value of time that passed since timer has started
+ static bool want_collect = 0; // store request from the server when user want to collect the mail
  
-//here whole process start
+/*** Sensing process ***/
  tilt_sensor = isTilted(digital_input);
  photo_sensor = lightDetection(analog_input, source_voltage, acdc_max);
  box_state = got_mail(ptr_tilt, ptr_photo, analog_treshold);
