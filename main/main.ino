@@ -1,13 +1,11 @@
 /*
+ UPDATE THIS PART !!!!!!!!!!!!!
  Project work for course 34338 - Telecommunication programming projects with Arduino January 2022
  Work areas:
  Sensor part: Krzysztof Jan Pac
  Mail notificiation: Marie Øverby
  Server: Søren Qvist, Marius Larsen
  */
-
-#include "Server.h"
-#include "sensor_read.h"
 
 #if defined(ESP32)
   #include <WiFi.h>
@@ -39,20 +37,24 @@ const int digital_input = INPUT_D2;
 const float analog_treshold = 0.20; //treshold in V to see if postal box flap is open
 const float source_voltage = 3.3; //source input voltage
 const float acdc_max = 1023.0; //maximum value obtained form AC/DC converter
+const unsigned long collection_dealy = 30000; // 30s
 
-
-/* The SMTP Session object used for Email sending */
-SMTPSession smtp;
+int isTilted(int digital_input);
+float lightDetection(int analog_input, float source_voltage, float acdc_max);
+bool got_mail(int *ptr_tilt, float *ptr_photo, float analog_treshold);
+bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed, bool *send_trigger);
+void my_timer(unsigned long *time_value, bool *ptr_trigger);
 
 /* Callback function to get the Email sending status */
 void smtpCallback(SMTP_Status status); 
 void sendingEmail();
 
+
+
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(115200);
-  
-  serverSetup();
   pinMode(digital_input,INPUT_PULLUP);
 
   Serial.println();
@@ -83,8 +85,8 @@ void loop() {
  static bool *ptr_sw2 = &isClosed_switch; //pointer to Closed Switch
  static bool mail_trigger = 0;
  static bool *ptr_trigger = &mail_trigger;
-  // Check if a client has connected
-   server.handleClient();
+ static unsigned long mytime = 0;
+ static bool want_collect = 0;
  
 //here whole process start
  tilt_sensor = isTilted(digital_input);
@@ -92,7 +94,7 @@ void loop() {
  box_state = got_mail(ptr_tilt, ptr_photo, analog_treshold);
  mail_trigger = main_fun(&box_state, ptr_sw1, ptr_sw2, ptr_trigger);
 
- if (mail_trigger == 1)
+ if (*ptr_trigger == 1) // && want_collect == 0
  {
   //send email
   Serial.println("Send");
@@ -101,6 +103,76 @@ void loop() {
  }
  delay(100);
 
+//add function for button if it was pushed on the server
+// ** add here**
+
+ //check if user want to collect mail from the postal box 
+ if(want_collect == 1)
+  {
+    my_timer(&mytime, &want_collect);
+  }
+
+}
+
+//function definitions
+
+int isTilted(int digital_input)
+{
+  int sensor_input = digitalRead(digital_input);
+  return sensor_input;
+}
+
+float lightDetection(int analog_input, float source_voltage, float acdc_max)
+{
+  float sensor_input = analogRead(analog_input);
+  float input_volatge = sensor_input * (source_voltage / acdc_max);
+  return input_volatge;
+}
+
+bool got_mail(int *ptr_tilt, float *ptr_photo, float analog_treshold)
+{
+  static bool postal_box_state = 0;
+  if((*ptr_tilt == 1) && (*ptr_photo > analog_treshold))
+  {
+    postal_box_state = 1;
+  }
+  else
+  {
+    postal_box_state = 0;
+  }
+
+  return postal_box_state;
+}
+
+bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed, bool *send_trigger)
+{
+  if(*flap_state == 0)
+  {
+    *isClosed = 1;
+  }
+  else
+  {
+    *isOpen = 1;
+  }
+
+  if(*flap_state == 0 && *isOpen == 1 && *isClosed == 1)
+  {
+    *send_trigger = 1;
+    *isOpen = 0;
+  }
+  return *send_trigger;
+}
+
+void my_timer(unsigned long *time_value, bool *ptr_trigger)
+{
+  *time_value = millis();
+
+  if(*time_value >= collection_dealy)
+  {
+    Serial.println("Time has passed");
+    *time_value = 0;
+    *ptr_trigger = 0;
+  }
 }
 
 // Used for sending email
