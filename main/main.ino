@@ -46,7 +46,7 @@ const int digital_input = INPUT_D2;
 const float analog_treshold = 0.20; //treshold in V to see if postal box flap is open
 const float source_voltage = 3.3; //source input voltage
 const float acdc_max = 1023.0; //maximum value obtained form AC/DC converter
-const unsigned long collection_dealy = 60000; // 60s
+const unsigned long collection_dealy = 600000; // 10 minutes delay in milliseconds
 static bool want_collect = 0; // store request from the server when user want to collect the mail
 
 void setup() {
@@ -94,6 +94,7 @@ void loop() {
   {
     // Switch on timer, which disable notification feature for required time
     my_timer(&mytime, &want_collect);
+    *ptr_trigger = 0;
   }
 
 }
