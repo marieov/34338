@@ -118,7 +118,7 @@ bool got_mail(int *ptr_tilt, float *ptr_photo, float analog_treshold)
 {
   static bool postal_box_state = 0;
   /*** checks if mailbox flap is/was opened and light illuminance has increased ***/
-  if ((*ptr_tilt == 1) && (*ptr_photo > analog_treshold))
+  if ((*ptr_tilt == 0) && (*ptr_photo > analog_treshold))
   {
     /*** someone opened mailbox/put mail inside ***/
     postal_box_state = 1;
