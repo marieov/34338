@@ -15,8 +15,6 @@
 
 */ 
 
-#include "sensor_read.h"
-
 #if defined(ESP32)
   #include <WiFi.h>
 #elif defined(ESP8266)
@@ -35,12 +33,7 @@
 #define AUTHOR_PASSWORD "a16jdlvk%%%0dkvg#)+++"
 
 // Recipient's email
-#define RECIPIENT_EMAIL "dtu34338-2022@hotmail.com" // *** Insert your email adress
-
-
-// Pin definition on ESP8266
-#define INPUT_D2 D2 // *** ESP32: replace "D2" with "2" 
-#define INPUT_A0 A0 // *** ESP32: replace "A0" with "0" 
+#define RECIPIENT_EMAIL "dtu34338-2022@hotmail.com" // *** Insert your email adress 
 
 // Pin definition on ESP8266/ESP32 
 #define INPUT_D2 D2 //ESP32: replace "D2" with "2" ***
@@ -54,9 +47,6 @@ const float analog_treshold = 0.20; //treshold in V to see if postal box flap is
 const float source_voltage = 3.3; //source input voltage
 const float acdc_max = 1023.0; //maximum value obtained form AC/DC converter
 const unsigned long collection_dealy = 30000; // 30s
-
-// The SMTP Session object used for email sending 
-SMTPSession smtp;
 
 // Callback function to get the email sending status 
 
@@ -109,8 +99,6 @@ void loop() {
  static bool isClosed_switch = 1; //same as the obove - is closed
  static bool *ptr_sw1 = &isOpen_switch; // pointer to Opened Switch
  static bool *ptr_sw2 = &isClosed_switch; //pointer to Closed Switch
- static bool mail_trigger = 0;
- static bool *ptr_trigger = &mail_trigger;
  static bool mail_trigger = 0; // variable used to trigger notification feature
  static bool *ptr_trigger = &mail_trigger; // pointer to the above variable
  static unsigned long mytime = 0; // store the value of time that passed since timer has started
@@ -292,9 +280,9 @@ void sendingEmail(){
 }
 
 /* ------------------- SERVER -------------------  */
-
+/*
 // Create an instance of the server
-WiFiserver server(80);
+WiFiServer server(80);
 
 
 //default custom static IP
@@ -388,4 +376,4 @@ void sendDelay() {                          // If a POST request is made to URI 
 
 void handleNotFound() {
   server.send(404, "text/plain", "404: Not found"); // Send HTTP status 404 (Not Found) when there's no handler for the URI in the request
-}
+}*/
