@@ -127,7 +127,7 @@ bool got_mail(int *ptr_tilt, float *ptr_photo, float analog_treshold)
 
   return postal_box_state;
 }
-
+// synthesizes data from previuous functions and decide if notification should be sent 
 bool main_fun(bool *flap_state, bool *isOpen, bool *isClosed, bool *send_trigger)
 {
   // checks if mailbox's flap/door is opened or closed
