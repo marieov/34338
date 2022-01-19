@@ -1,5 +1,7 @@
 /*
   Project work for course 34338 - Telecommunication programming projects with Arduino January 2022
+  A mail notification system using ESP and Arduino. 
+  
   Work areas:
   Sensor part + timer: Krzysztof Jan Pac
   Notificiation: Marie Øverby
@@ -70,13 +72,13 @@ void loop() {
   // Check if a client has connected
   server.handleClient();
 
-  /* ------------------- SENSORS -------------------  */
+  // Sensor reading
   tilt_sensor = isTilted(digital_input);
   photo_sensor = lightDetection(analog_input, source_voltage, acdc_max);
   box_state = got_mail(ptr_tilt, ptr_photo, analog_treshold);
   mail_trigger = main_fun(&box_state, ptr_sw1, ptr_sw2, ptr_trigger);
 
-
+  // If sensors are triggered, the notification is sent
   if (*ptr_trigger == 1 && want_collect == 0)
   {
     sendNotification();
@@ -165,10 +167,10 @@ void my_timer(unsigned long *time_value, bool *ptr_trigger)
   }
 }
 
-/* ------------------- NOTIFICATION -------------------  */
+/* ------------------- FUNCTIONS FOR NOTIFICATION -------------------  */
 void sendNotification() {
   String ip = WiFi.localIP().toString();
- int response = webhook.trigger(ip);
+  int response = webhook.trigger(ip);
   if (response == 200){
     Serial.println("Response was sent correctly to webhooks");
   }
@@ -177,7 +179,7 @@ void sendNotification() {
   }
 }
 
-/* ------------------- SERVER -------------------  */
+/* ------------------- FUNCTIONS FOR SERVER -------------------  */
 
 void handleRoot() {                         // When URI / is requested, send a web page with a button to toggle the mail button
   server.send(200, "text/html", "<html><title>Internet of Things - Demonstration</title><meta charset=\"utf-8\" \/> \
