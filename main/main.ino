@@ -29,8 +29,8 @@
 #define INPUT_D2 D2 //ESP32: replace "D2" with "2" ***
 #define INPUT_A0 A0 //ESP32: replace "A0" with "0" ***
 
-#define KEY "cTOTlyJFASTzrzrKTo25ex"  // ***Webhooks Key
-#define EVENT "mail_notif"            // ***Webhooks Event Name
+#define KEY "bMRD9CPHrVrrIVHNTng1NI"  // ***Webhooks Key
+#define EVENT "lol"            // ***Webhooks Event Name
 
 // Variables used to read sensor
 const int analog_input = INPUT_A0;
