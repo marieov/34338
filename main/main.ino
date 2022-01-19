@@ -1,16 +1,18 @@
 /*
   Project work for course 34338 - Telecommunication programming projects with Arduino January 2022
+  A mail notification system using ESP and Arduino. 
+  
   Work areas:
   Sensor part + timer: Krzysztof Jan Pac
-  Mail notificiation: Marie Øverby
+  Notificiation: Marie Øverby
   Server + WiFi: Søren Qvist, Marius Larsen
 
   The code consists of three parts:
   Sensor readings
-  An email sending service. This code is taken from Rui Santos, https://github.com/mobizt/ESP-Mail-Client, and adapted by Marie Øverby.
-  Server with button that delays the email sending service. This is used to avoid getting an email when you collect the mail.
+  A notification sending service. 
+  Server with button that delays the notification sending service. This is used to avoid getting a notification when you collect the mail.
 
-  Minor changes needs to be done in this file in order for the esp to connect to the right WiFi and the email sending service to work.
+  Minor changes needs to be done in this file in order for the esp to connect to the right WiFi and the notification sending service to work.
   Search though the file for "***" to easily find which varibles to change.
 
 */
@@ -26,11 +28,11 @@
 #include <ESP8266Webhook.h>
 
 // Pin definition on ESP8266/ESP32
-#define INPUT_D2 D2 //ESP32: replace "D2" with "2" ***
-#define INPUT_A0 A0 //ESP32: replace "A0" with "0" ***
+#define INPUT_D2 D2 // *** ESP32: replace "D2" with "2" 
+#define INPUT_A0 A0 // *** ESP32: replace "A0" with "0" 
 
-#define KEY "bMRD9CPHrVrrIVHNTng1NI"  // ***Webhooks Key
-#define EVENT "lol"            // ***Webhooks Event Name
+#define KEY "bMRD9CPHrVrrIVHNTng1NI"  // *** Your Webhooks Key
+#define EVENT "lol"                   // *** Your Webhooks Event Name
 
 // Variables used to read sensor
 const int analog_input = INPUT_A0;
@@ -70,16 +72,16 @@ void loop() {
   // Check if a client has connected
   server.handleClient();
 
-  /* ------------------- SENSORS -------------------  */
+  // Sensor reading
   tilt_sensor = isTilted(digital_input);
   photo_sensor = lightDetection(analog_input, source_voltage, acdc_max);
   box_state = got_mail(ptr_tilt, ptr_photo, analog_treshold);
   mail_trigger = main_fun(&box_state, ptr_sw1, ptr_sw2, ptr_trigger);
 
-
+  // If sensors are triggered, the notification is sent
   if (*ptr_trigger == 1 && want_collect == 0)
   {
-    sendEmail();
+    sendNotification();
     *ptr_trigger = 0; // reset mail notification trigger to 0
   }
   delay(100);
@@ -165,19 +167,19 @@ void my_timer(unsigned long *time_value, bool *ptr_trigger)
   }
 }
 
-/* ------------------- EMAIL -------------------  */
-void sendEmail() {
+/* ------------------- FUNCTIONS FOR NOTIFICATION -------------------  */
+void sendNotification() {
   String ip = WiFi.localIP().toString();
- int response = webhook.trigger(ip);
+  int response = webhook.trigger(ip);
   if (response == 200){
-    Serial.println("Response was sent correctly to wehbooks");
+    Serial.println("Response was sent correctly to webhooks");
   }
   else{
-    Serial.println("Response was not sent correctly to wehbooks");
+    Serial.println("Response was not sent correctly to webhooks");
   }
 }
 
-/* ------------------- SERVER -------------------  */
+/* ------------------- FUNCTIONS FOR SERVER -------------------  */
 
 void handleRoot() {                         // When URI / is requested, send a web page with a button to toggle the mail button
   server.send(200, "text/html", "<html><title>Internet of Things - Demonstration</title><meta charset=\"utf-8\" \/> \
